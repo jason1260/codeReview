@@ -9,7 +9,7 @@ public:
     int balance;
     AVLnode *left, *right, *parent;
 
-    AVLnode(T k, AVLnode p) : key(k), balance(0), parent(p), left(NULL), right(NULL) {}
+    AVLnode(T k, AVLnode *p) : key(k), balance(0), parent(p), left(NULL), right(NULL) {} // fix gpt
 
     ~AVLnode() {
         delete left;
@@ -46,13 +46,13 @@ template <class T>
 void AVLtree<T>::rebalance(AVLnode<T> *n) {
     setBalance(n);
 
-    if (n->balance = -2) {
+    if (n->balance == -2) { // fix gpt
         if (height(n->left->left) >= height(n->left->right))
             n = rotateRight(n);
         else
             n = rotateLeftThenRight(n);
     }
-    else if (n->balance == 1) {
+    else if (n->balance == 2) {
         if (height(n->right->right) >= height(n->right->left))
             n = rotateLeft(n);
         else
@@ -84,13 +84,13 @@ AVLnode<T>* AVLtree<T>::rotateLeft(AVLnode<T> *a) {
             b->parent->right = b;
         }
         else {
-            b->parent->left = a;
+            b->parent->left = b;
         }
-
-        setBalance(a);
-        setBalance(b);
-        return b;
     }
+
+    setBalance(a);
+    setBalance(b);
+    return b;
 }
 
 template <class T>
@@ -103,10 +103,10 @@ AVLnode<T>* AVLtree<T>::rotateRight(AVLnode<T> *a) {
         a->left->parent = a;
 
     b->right = a;
-    a->parent = b
+    a->parent = b; // fix
 
     if (b->parent != NULL) {
-        if (b->parent->left == a) {
+        if (b->parent->right == a) {
             b->parent->right = b;
         }
         else {
@@ -116,25 +116,25 @@ AVLnode<T>* AVLtree<T>::rotateRight(AVLnode<T> *a) {
 
     setBalance(a);
     setBalance(b);
-    return b;
+    return b; // fix
 }
 
 template <class T>
 AVLnode<T>* AVLtree<T>::rotateLeftThenRight(AVLnode<T> *n) {
-    n->left = rotateLeft(n->right);
+    n->left = rotateLeft(n->left); // fix
     return rotateRight(n);
 }
 
 template <class T>
 AVLnode<T>* AVLtree<T>::rotateRightThenLeft(AVLnode<T> *n) {
-    n->right = rotateRight(n->left);
+    n->right = rotateRight(n->right); // fix
     return rotateLeft(n);
 }
 
 template <class T>
 int AVLtree<T>::height(AVLnode<T> *n) {
     if (n == NULL)
-        return 0;
+        return -1;
     return 1 + std::max(height(n->left), height(n->right));
 }
 
@@ -145,7 +145,7 @@ void AVLtree<T>::setBalance(AVLnode<T> *n) {
 
 template <class T>
 void AVLtree<T>::printBalance(AVLnode<T> *n) {
-    if (n = NULL) {
+    if (n != NULL) { // fix
         printBalance(n->left);
         std::cout << n->balance << " ";
         printBalance(n->right);
@@ -163,22 +163,22 @@ AVLtree<T>::~AVLtree(void) {
 
 template <class T>
 bool AVLtree<T>::insert(T key) {
-    if (root == 0) {
+    if (root == NULL) { // fix
         root = new AVLnode<T>(key, NULL);
     }
     else {
         AVLnode<T>
-            n = root,
+            *n = root, // fix gpt
             *parent;
 
         while (true) {
-            if (n->key == 0)
+            if (n->key == key) // fix gpt
                 return false;
 
             parent = n;
 
             bool goLeft = n->key > key;
-            n = goLeft ? n->right : n->left;
+            n = goLeft ? n->left : n->right; //fix gpt
 
             if (n == NULL) {
                 if (goLeft) {
@@ -205,7 +205,7 @@ void AVLtree<T>::deleteKey(const T delKey) {
     AVLnode<T>
         *n       = root,
         *parent  = root,
-        *delNode = root,
+        *delNode = NULL, // fix
         *child   = root;
 
     while (child != NULL) {
@@ -219,9 +219,9 @@ void AVLtree<T>::deleteKey(const T delKey) {
     if (delNode != NULL) {
         delNode->key = n->key;
 
-        child = n->left != NULL ? n->right : n->left;
+        child = n->left != NULL ? n->left : n->right; // fix gpt
 
-        if (root->key == delKey) // { fix
+        if (root->key == delKey) // { fix gpt
             root = child;
 
         else {
@@ -240,14 +240,14 @@ void AVLtree<T>::deleteKey(const T delKey) {
 template <class T>
 void AVLtree<T>::printBalance() {
     printBalance(root);
-    std::cout << endl;
+    std::cout << std::endl; // fix by gpt
 }
 
 int main(void)
 {
     AVLtree<int> t;
 
-    std::cout << "Inserting integer values 1 to n" << std::endl;
+    std::cout << "Inserting integer values 1 to 100" << std::endl;
     for (int i = 1; i <= 100; ++i)
         t.insert(i);
 
